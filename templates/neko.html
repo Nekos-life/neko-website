@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<title>Nekos {{ cat }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="194x194" href="/static/icons/favicon-194x194.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/static/icons/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+<link rel="manifest" href="/static/icons/manifest.json">
+<link rel="mask-icon" href="/static/icons/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/static/icons/favicon.ico">
+<meta name="msapplication-TileColor" content="#603cba">
+<meta name="msapplication-TileImage" content="/static/icons/mstile-144x144.png">
+<meta name="msapplication-config" content="/static/icons/browserconfig.xml">
+<meta name="theme-color" content="#673ab7">
+<meta property="og:title" content="Nekos.life"/>
+<meta property="og:description"
+      content="{{ cat }}"/>
+<meta property="og:url" content="{{ img_url }}"/>
+<meta property="og:image" content="{{ img_url }}"/>
+<style>
+button.fixed {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+</style>
+<body class="w3-deep-purple">
+<div class="w3-card-4 w3-deep-purple w3-center">
+    <button class="w3-button w3-circle fixed w3-margin w3-card-4 w3-blue w3-ripple w3-right w3-hover-pink" onclick="window.location.reload()"><i class="fa fa-caret-right"></i></button>
+
+    <div class="w3-container w3-card-4 w3-center w3-deep-purple">
+
+        <h1>Nekos {{ cat }}</h1>
+        <button class="w3-card-4 w3-button w3-section w3-blue w3-ripple w3-w3-center w3-hover-pink"
+                style="margin-right: 15px" onclick="window.location='{{ url_for('nsfwneko') }}'">Lewd Nekos!
+        </button>
+         <button class="w3-card-4 w3-button w3-section w3-blue w3-ripple w3-w3-center w3-hover-pink"
+                style="margin-right: 15px"
+                onclick="window.location='https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384'">
+            Discord bot!
+        </button>
+        <button class="w3-card-4 w3-button w3-section w3-blue w3-ripple w3-w3-center w3-hover-pink"
+                style="margin-right: 15px" onclick="window.location='https://discord.gg/BARzYz8'">Discord!
+        </button>
+
+    </div>
+
+    <div class="w3-container w3-card-4 w3-center w3-purple">
+        <br>
+        <img src="{{ img_url }}" alt="neko" class="w3-image w3-card-4">
+        <br>
+        <br>
+    </div>
+
+    <div class="w3-container w3-card-4 w3-center w3-deep-purple">
+        <p>Made By Tom with love💖</p>
+        <div class="w3-small w3-center">
+            <i class="fa fa-cogs"></i> <a href="{{ url_for('nekos') }}">Api</a><br>
+            <i class="fa fa-github"></i> <a href="https://github.com/Nekos-life">Github</a><br>
+            <i class="fa fa-paypal"></i> <a href="https://www.paypal.me/MewBot/">Paypal</a><br>
+            <i class="fa fa-twitter"></i> <a href="https://twitter.com/TheNeko_life">Twitter</a><br>
+        </div>
+        <br>
+    </div>
+</div>
+</body>
+</html>
