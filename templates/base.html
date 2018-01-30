@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<title>Neko upload</title>
+<meta charset="UTF-8">
+
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!--Import materialize.css-->
+<title>Nekos {{ cat }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="194x194" href="/static/icons/favicon-194x194.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/static/icons/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+<link rel="manifest" href="/static/icons/manifest.json">
+<link rel="mask-icon" href="/static/icons/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/static/icons/favicon.ico">
+<meta name="msapplication-TileColor" content="#603cba">
+<meta name="msapplication-TileImage" content="/static/icons/mstile-144x144.png">
+<meta name="msapplication-config" content="/static/icons/browserconfig.xml">
+<meta name="theme-color" content="#673ab7">
+<meta property="og:title" content="Nekos.life"/>
+<meta property="og:description"
+      content="{{ cat }}"/>
+<meta property="og:url" content="{{ img_url }}"/>
+<meta property="og:image" content="{{ img_url }}"/>
+<!--Let browser know website is optimized for mobile-->
+<style>
+    html, body, h1, h2, h3, h4, h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+<body class="w3-deep-purple">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-deep-purple w3-large" style="z-index:4">
+    <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey w3-purple"
+            onclick="w3_open();"><i
+            class="fa fa-bars"></i>  Menu
+    </button>
+    <span class="w3-bar-item w3-hide-small w3-hide-medium w3-left"><img
+            src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+            class="w3-circle w3-margin-left" style="width:46px"></span>
+    <span class="w3-bar-item w3-hide-large w3-right"><img
+            src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+            class="w3-circle w3-margin-left" style="width:46px"></span>
+    <span class="w3-bar-item w3-hide-small w3-hide-medium w3-left w3-padding-large"><b>Neko upload</b></span>
+
+</div>
+
+<!-- Sidebar/menu -->
+
+<nav class="w3-sidebar  w3-collapse w3-purple w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+    <div class="w3-container w3-card-4 w3-row">
+        <div class="w3-col s4" style="padding-top: 7px;">
+            {% if not session.userid %}
+            <a href="{{ url_for('login') }}" class="w3-bar-item w3-card-4 w3-button">log in <i
+                    class="fa fa-sign-in"></i> </a>
+            {% else %}
+            {% if not session['avatar'] %}
+            <img src="https://cdn.discordapp.com/embed/avatars/0.png" class="w3-circle w3-card-4 w3-margin-right"
+                 style="width:46px">
+            {% elif session['avatar'].startswith('a_') %}
+            <img src="https://cdn.discordapp.com/avatars/{{ session['userid'] }}/{{ session['avatar'] }}.gif"
+                 class="w3-circle w3-card-4 w3-margin-right" style="width:46px">
+            {% else %}
+            <img src="https://cdn.discordapp.com/avatars/{{ session['userid'] }}/{{ session['avatar'] }}.png"
+                 class="w3-circle w3-card-4 w3-margin-right" style="width:46px">
+
+            {% endif %}
+
+        </div>
+
+        <div class="w3-col  s8 w3-bar" style="padding-top: 7px;">
+            <span>Welcome, <strong>{{ session['username'] }}</strong></span><br>
+            <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa fa-sign-out"></i></a>
+        </div>
+        {% endif %}
+    </div>
+
+    <hr>
+    <div class="w3-container ">
+        <h5>Menu</h5>
+    </div>
+    <div class="w3-bar-block w3-card-4">
+        <a href="#" class="w3-bar-item w3-border w3-button w3-padding w3-hide-large w3-blue-grey w3-hover-black"
+           onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+        <a href="/" class="w3-bar-item w3-border w3-button w3-padding "><i class="fa fa-home fa-fw"></i> 
+            Home</a>
+        <a href="/upload" class="w3-bar-item w3-border w3-button w3-padding"><i class="fa fa-upload fa-fw"></i>  upload</a>
+        <a href="/release" class="w3-bar-item w3-border  w3-button w3-padding"><i class="fa fa-list-ul fa-fw"></i> 
+            Files</a>
+    </div>
+</nav>
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+     title="close side menu" id="myOverlay"></div>
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+    <br>
+    <div class="w3-panel w3-red w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+        class="w3-button w3-red w3-large w3-display-topright">&times;</span>
+        <ul>
+            {%- for msg in errors %}
+
+            <li><h3>Error</h3>
+                <p>{{ msg }}</p></li>
+            {% endfor -%}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["success"]) %}
+    {% if errors %}
+    <br>
+    <div class="w3-panel w3-green w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+        class="w3-button w3-green w3-large w3-display-topright">&times;</span>
+        <ul>
+            {%- for msg in errors %}
+            <li><h3>Success</h3>
+                <p>{{ msg }}</p></li>
+            {% endfor -%}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    {% with errors = get_flashed_messages(category_filter=["warning"]) %}
+    {% if errors %}
+    <br>
+    <div class="w3-panel w3-yellow w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+        class="w3-button w3-yellow w3-large w3-display-topright">&times;</span>
+        <ul>
+            {%- for msg in errors %}
+            <li><h3>Warning</h3>
+                <p>{{ msg }}</p></li>
+            {% endfor -%}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["info"]) %}
+    {% if errors %}
+    <br>
+    <div class="w3-panel w3-blue w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+        class="w3-button w3-blue w3-large w3-display-topright">&times;</span>
+        <ul>
+            {%- for msg in errors %}
+            <li><h3>Info</h3>
+                <p>{{ msg }}</p></li>
+            {% endfor -%}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+    <!-- Footer -->
+    <footer class="w3-container">
+    </footer>
+    <!-- End page content -->
+
+
+    <script>
+        // Get the Sidebar
+        var mySidebar = document.getElementById("mySidebar");
+
+        // Get the DIV with overlay effect
+        var overlayBg = document.getElementById("myOverlay");
+
+        // Toggle between showing and hiding the sidebar, and add overlay effect
+        function w3_open() {
+            if (mySidebar.style.display === 'block') {
+                mySidebar.style.display = 'none';
+                overlayBg.style.display = "none";
+            } else {
+                mySidebar.style.display = 'block';
+                overlayBg.style.display = "block";
+            }
+        }
+
+        // Close the sidebar with the close button
+        function w3_close() {
+            mySidebar.style.display = "none";
+            overlayBg.style.display = "none";
+        }
+    </script>
+    <script>
+        function myFunction(id) {
+            var x = document.getElementById(id);
+            if (x.className.indexOf("w3-show") === -1) {
+                x.className += " w3-show";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+            }
+        }
+    </script>
+</body>
+</html>

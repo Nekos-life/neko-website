@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block content %}
+
+<hr>
+<div class="w3-container">
+    <h5><i class="fa fa-server fa-fw w3-purple"></i>File List</h5>
+    <ul class="w3-ul w3-card-4 w3-purple">
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('Nekos')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">Nekos </span><br></div>
+            <div id="Nekos" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in nekos %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/neko/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/neko/{{ file }}">https://cdn.nekos.life/neko/{{ file
+                                }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/neko/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('lewds')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">Lewds </span><br></div>
+            <div id="lewds" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in lewds %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/lewd/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/lewd/{{ file }}">https://cdn.nekos.life/neko/{{ file
+                                }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/lewd/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('hugs')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">Hugs </span><br></div>
+            <div id="hugs" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in hugs %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/hug/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/hug/{{ file }}">https://cdn.nekos.life/neko/{{ file
+                                }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/hug/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('kiss')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">kiss </span><br></div>
+            <div id="kiss" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in kisses %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/kiss/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/kiss/{{ file }}">https://cdn.nekos.life/neko/{{ file
+                                }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/kiss/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('pats')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">pats </span><br></div>
+            <div id="pats" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in pats %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/pat/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/pat/{{ file }}">https://cdn.nekos.life/pat/{{ file
+                                }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/pat/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('cuddle')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">cuddles </span><br></div>
+            <div id="cuddle" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in cuddles %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/cuddle/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/cuddle/{{ file }}">https://cdn.nekos.life/cuddle/{{
+                                file }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/cuddles/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+
+        <li class="w3-medium w3-card-4 w3-purple">
+            <div onclick="myFunction('lizard')" class="w3-block w3-card-4 w3-deep-purple"><img
+                    src="http://testy.nekos.life/static/icons/favicon-194x194.png"
+                    class="w3-left w3-circle w3-margin-right" style="width:35px">
+                <span class="w3-xlarge">lizards </span><br></div>
+            <div id="lizard" class="w3-container w3-hide w3-card-4">
+                <ul class="w3-ul w3-card-4 w3-deep-purple">
+                    {% for file in lizards %}
+                    <li class="w3-medium w3-card-4 w3-deep-purple">
+                        <p> name: {{ file }}<br>
+                            <img
+                                    src="https://cdn.nekos.life/lizard/{{ file }}"
+                                    onclick="document.getElementById('{{ file }}').style.display='block'"
+                                    class=" w3-margin-left" style="width:150px">
+                            link: <a
+                                    href="https://cdn.nekos.life/lizard/{{ file }}">https://cdn.nekos.life/lizard/{{
+                                file }}</a><br>
+                        <div id="{{ file }}" class="w3-modal" onclick="this.style.display='none'">
+                            <span class="w3-button w3-pink w3-hover-red w3-xlarge w3-display-topright">&times;</span>
+                            <div class="w3-modal-content w3-animate-zoom">
+                                <img src="https://cdn.nekos.life/lizard/{{ file }}" class="w3-image w3-card-4">
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+
+
+    </ul>
+</div>
+<hr>
+{% endblock %}

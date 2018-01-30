@@ -8,7 +8,7 @@
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="static/css/materialize.min.css" media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="static/css/materialize.min.css" media="screen,projection"/>
-    <title>lewds {{ cat }}</title>
+    <title>Nekos {{ cat }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -24,11 +24,12 @@
     <meta name="msapplication-TileImage" content="/static/icons/mstile-144x144.png">
     <meta name="msapplication-config" content="/static/icons/browserconfig.xml">
     <meta name="theme-color" content="#673ab7">
+    <meta property="og:title" content="Nekos.life"/>
     <meta property="og:description"
           content="{{ cat }}"/>
-    <meta property="og:title" content="https://Nekos.life"/>
-    <meta property="og:url" content="https://Nekos.life"/>
-    <meta property="og:image" content="/static/icons/favicon-194x194.png"/>
+    <meta property="og:url" content="{{ img_url }}"/>
+    <meta property="og:image" content="{{ img_url }}"/>
+    <!--Let browser know website is optimized for mobile-->
 
 </head>
 
@@ -58,21 +59,19 @@
 </div>
 <nav>
     <div class="nav-wrapper deep-purple darken-2">
-        <a href="#" class="brand-logo hide-on-small-only">Lewd Nekos! {{ cat }}</a>
-        <a href="#" class="brand-logo right hide-on-med-and-up">Lewds owo</a>
+        <a href="#" class="brand-logo hide-on-small-only">Nekos! {{ cat }}</a>
+        <a href="#" class="brand-logo right hide-on-med-and-up">Nekos!</a>
         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="{{ url_for('index') }}">Nekos!</a></li>
+            <li><a href="{{ url_for('nsfwneko') }}">Lewd Nekos!</a></li>
             <li>
                 <a href="https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384">Discord
                     bot!</a></li>
             <li><a href="https://discord.gg/BARzYz8">Discord!</a></li>
         </ul>
         <ul class="side-nav deep-purple darken-2" id="mobile-demo">
-            <li><a class="purple" href="{{ url_for('index') }}"><i class="fa fa-paw"></i>Nekos!</a></li>
-            <li><a class="purple"
-                   href="https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384"><i
-                    class="fa fa-android"></i>Add Discord bot!</a></li>
+            <li><a class="purple" href="{{ url_for('nsfwneko') }}"><i class="fa fa-paw"></i>Lewd Nekos!</a></li>
+            <li><a class="purple" href="https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384"><i class="fa fa-android"></i>Add Discord bot!</a></li>
             <li><a class="purple" href="https://discord.gg/BARzYz8"><i class="fa fa-plus-circle"></i>Join Discord!</a>
             </li>
             <li><a class="purple" href="{{ url_for('list_routes') }}"><i class="fa fa-cogs"></i>API</a></li>

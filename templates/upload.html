@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+
+<div class="w3-card-4">
+    <header class="w3-container w3-purple">
+        <h1>Upload</h1>
+    </header>
+    <br>
+    <br>
+    <div class="w3-container w3-purple w3-card-4">
+        <form method=post enctype=multipart/form-data>
+            <p><input type=file name="file[]" multiple="">
+                <br><br><input class="w3-radio" type="radio" name="type" value="neko" checked>
+                <label>neko</label>
+                <br><input class="w3-radio" type="radio" name="type" value="lewd">
+                <label>lewd</label>
+                <br><input class="w3-radio" type="radio" name="type" value="kiss">
+                <label>kiss</label>
+                <br><input class="w3-radio" type="radio" name="type" value="hug">
+                <label>hug</label>
+                <br><input class="w3-radio" type="radio" name="type" value="pat">
+                <label>pat</label>
+                <br><input class="w3-radio" type="radio" name="type" value="cuddle">
+                <label>cuddle</label>
+                <br><input class="w3-radio" type="radio" name="type" value="lizard">
+                <label>lizard</label>
+                <br><br><input class="w3-btn w3-blue w3-card-4 w3-hover-light-blue " type=submit value=Upload>
+        </form>
+    </div>
+    <br>
+</div>
+{% endblock %}
+
+
+

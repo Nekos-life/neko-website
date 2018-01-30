@@ -1,22 +1,68 @@
+import gevent.monkey
+# gevent for async
+# patch first to avoid recursion errors with oauth on callback
+gevent.monkey.patch_all()
+
 import os
 import random
+import sys
 from functools import wraps
 
-from flask import Flask, url_for, jsonify, render_template, request, abort
+from flask import jsonify, abort, Flask, request, redirect, url_for, flash, render_template, session
 from flask_cors import CORS
-from gevent import monkey
+from requests_oauthlib import OAuth2Session
 
+from config import OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET, OAUTH2_REDIRECT_URI, API_BASE_URL, AUTHORIZATION_BASE_URL, \
+    TOKEN_URL, LEWD_UPLOAD_FOLDER, NEKO_UPLOAD_FOLDER, PAT_UPLOAD_FOLDER, HUG_UPLOAD_FOLDER, KISS_UPLOAD_FOLDER, \
+    CUDDLE_UPLOAD_FOLDER, LIZARD_UPLOAD_FOLDER, ALLOWED_EXTENSIONS, IDS , SECRET_KEY
 from static.cats import cats
 from static.why import why
 
-monkey.patch_all()
 application = Flask(__name__)
-cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
-application.config['PROPAGATE_EXCEPTIONS'] = False
+# Cross-Origin Resource Sharing
+cors = CORS(application, resources={r"/*": {"origins": "*"}})
+# debug
+if any('debug' in arg.lower() for arg in sys.argv):
+    application.debug = True
+    application.config['PROPAGATE_EXCEPTIONS'] = True
+# old/maybe for sharex or something
 keys = []
+# False for utf8/uni
 application.config['JSON_AS_ASCII'] = False
+application.config["SECRET_KEY"] = SECRET_KEY
+
+if 'http://' in OAUTH2_REDIRECT_URI:
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
+# we'll let cf handle this
+if 'https://' in OAUTH2_REDIRECT_URI:
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def make_session(token=None, state=None, scope=None):
+    return OAuth2Session(
+        client_id=OAUTH2_CLIENT_ID,
+        token=token,
+        state=state,
+        scope=scope,
+        redirect_uri=OAUTH2_REDIRECT_URI,
+        auto_refresh_kwargs={
+            'client_id': OAUTH2_CLIENT_ID,
+            'client_secret': OAUTH2_CLIENT_SECRET,
+        },
+        auto_refresh_url=TOKEN_URL,
+        token_updater=token_updater)
+
+
+def token_updater(token):
+    session['oauth2_token'] = token
+
+
+# for @require_appkey
 def require_appkey(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
@@ -28,87 +74,109 @@ def require_appkey(view_function):
     return decorated_function
 
 
-def new_rnd(cat):
-    names = os.listdir(os.path.join(application.static_folder, '/var/www/nekoapi/' + cat))
+def random_image(cat):
+    names = os.listdir(os.path.join('/var/www/nekoapi/' + cat))
     random.shuffle(names)
-    img_url = url_for('static', filename=os.path.join(cat, random.choice(names)))
-    return img_url
-
-
-def random_image(x):
-    names = os.listdir(os.path.join(application.static_folder, x))
-    random.shuffle(names)
-    img_url = url_for('static', filename=os.path.join(x, random.choice(names)))
+    img_url = 'https://cdn.nekos.life/' + os.path.join(cat, random.choice(names))
     return img_url
 
 
 @application.route('/')
-def neko():
+def index():
     random.shuffle(cats)
     c = random.choice(cats)
-    return render_template('neko.html', img_url=random_image("neko"), cat=c)
+    return render_template('index.html', img_url=random_image("neko"), cat=c)
 
 
 @application.route('/lewd')
 def nsfwneko():
     random.shuffle(cats)
     c = random.choice(cats)
-    return render_template('nsfwneko.html', img_url=random_image("nya"), cat=c)
+    return render_template('nsfwneko.html', img_url=random_image("lewd"), cat=c)
 
 
+# DEPRECATED
 @application.route('/api/neko')
 def nekos():
-    link = 'https://nekos.life' + random_image("neko")
-    return jsonify(neko=link)
+    return jsonify(neko=random_image("neko"))
 
 
+# DEPRECATED
 @application.route('/api/lewd/neko')
 def lewdnekos():
-    link = 'https://nekos.life' + random_image("nya")
+    link = random_image("lewd")
     return jsonify(neko=link)
 
 
+# DEPRECATED
 @application.route('/api/pat')
 def pat():
-    link = 'https://nekos.life' + random_image("pat")
+    link = random_image("pat")
     return jsonify(url=link)
 
 
+# DEPRECATED
 @application.route('/api/hug')
 def hug():
-    link = 'https://nekos.life' + random_image("hug")
+    link = random_image("hug")
     return jsonify(url=link)
 
 
+# DEPRECATED
 @application.route('/api/kiss')
 def kiss():
-    link = 'https://nekos.life' + random_image("kiss")
+    link = random_image("kiss")
     return jsonify(url=link)
 
 
+# DEPRECATED
 @application.route('/api/lizard')
 def lizard():
-    link = 'https://nekos.life' + random_image("lizard")
+    link = random_image("lizard")
     return jsonify(url=link)
 
 
+# DEPRECATED
 @application.route('/api/why')
-def whyy():
-    whytho = random.choice(why)
-    return jsonify(why=whytho)
+def huh():
+    w = random.choice(why)
+    return jsonify(why=w)
 
 
-# all v2 stuff
+# all v2 stuff #
+
+
+# lol im lazy have docs :^)
+@application.route('/api/v2/endpoints')
+def list_routes():
+    import urllib.parse
+    output = []
+    for rule in application.url_map.iter_rules():
+        options = {}
+        for arg in rule.arguments:
+            options[arg] = "[{0}]".format(arg).replace("[cat]", "<neko,lewd,kiss,hug,pat,cuddle,lizard>")
+        methods = ','.join(rule.methods)
+        url = url_for(rule.endpoint, **options)
+        if "v2" in str(url):
+            line = urllib.parse.unquote(
+                "{:20s} {}".format(methods, url))
+            output.append(line)
+
+        if "api" in str(url) and "v2" not in str(url):
+            line = urllib.parse.unquote(
+                "{:20s} {} -DEPRECATED".format(methods, url))
+            output.append(line)
+    return jsonify(sorted(output))
+
+
 @application.route('/api/v2/img/<string:cat>')
 def new(cat):
-    link = 'https://cdn.nekos.life' + new_rnd(cat)
-    clink = link.replace('/static', '')
-    return jsonify(url=clink)
+    link = random_image(cat)
+    return jsonify(url=link)
 
 
 @application.route('/api/v2/why')
 def _w():
-    random.shuffle(why)
     w = random.choice(why)
     return jsonify(why=w)
 
@@ -120,5 +188,116 @@ def _c():
     return jsonify(cat=c)
 
 
+# oauth/upload
+@application.route('/upload/', methods=['GET', 'POST'])
+def upload():
+    if 'userid' in session:
+        if session['userid'] in IDS:
+            if request.method == 'POST':
+                if 'file[]' not in request.files:
+                    flash('No file part')
+                    return redirect(request.url)
+                files = request.files.getlist("file[]")
+                print("owo")
+                for file in files:
+                    print(file)
+                    if not allowed_file(file.filename):
+                        flash(u'bad file', 'error')
+                    if file.filename == '':
+                        flash('No selected file')
+                        return redirect(request.url)
+                    if file and allowed_file(file.filename):
+                        n, l, k, h, p, c, li = "neko", "lewd", "kiss", "hug", "pat", "cuddle", "lizard"
+                        option = request.form['type']
+                        print(option)
+                        d = ""
+                        if option == n:
+                            d = NEKO_UPLOAD_FOLDER
+                        if option == l:
+                            d = LEWD_UPLOAD_FOLDER
+                        if option == k:
+                            d = KISS_UPLOAD_FOLDER
+                        if option == h:
+                            d = HUG_UPLOAD_FOLDER
+                        if option == p:
+                            d = PAT_UPLOAD_FOLDER
+                        if option == c:
+                            d = CUDDLE_UPLOAD_FOLDER
+                        if option == li:
+                            d = LIZARD_UPLOAD_FOLDER
+                        filename = file.filename
+                        print(d)
+                        destination = "".join([d, filename])
+                        print("Accept incoming file:", filename)
+                        print(destination)
+                        file.save(destination)
+                        flash(u'uploaded', 'success')
+                return redirect(url_for('rel'))
+            random.shuffle(cats)
+            ca = random.choice(cats)
+            return render_template('upload.html', cat=ca)
+
+        else:
+            return "401"
+    else:
+        return redirect(url_for('login'))
+
+
+@application.route('/release/')
+def rel():
+    if 'userid' in session:
+        if session['userid'] in IDS:
+            n, l, k, h, p, c, li = os.listdir(NEKO_UPLOAD_FOLDER), os.listdir(LEWD_UPLOAD_FOLDER), os.listdir(
+                KISS_UPLOAD_FOLDER), os.listdir(HUG_UPLOAD_FOLDER), os.listdir(PAT_UPLOAD_FOLDER), os.listdir(
+                CUDDLE_UPLOAD_FOLDER), os.listdir(LIZARD_UPLOAD_FOLDER)
+            random.shuffle(cats)
+            ca = random.choice(cats)
+            return render_template('list.html', nekos=n, lewds=l, kisses=k, hugs=h, pats=p, cuddles=c, lizards=li,
+                                   cat=ca)
+        else:
+            return "401"
+    else:
+        return redirect(url_for('login'))
+
+
+@application.route('/login/')
+def login():
+    scope = request.args.get(
+        'scope',
+        'identify')
+    discord = make_session(scope=scope.split(' '))
+    authorization_url, state = discord.authorization_url(AUTHORIZATION_BASE_URL)
+    session['oauth2_state'] = state
+    return redirect(authorization_url)
+
+
+@application.route('/callback/')
+def callback():
+    if request.values.get('error'):
+        return request.values['error']
+    discord = make_session(state=session.get('oauth2_state'))
+    token = discord.fetch_token(
+        TOKEN_URL,
+        client_secret=OAUTH2_CLIENT_SECRET,
+        authorization_response=request.url)
+    session['oauth2_token'] = token
+    discord = make_session(token=session.get('oauth2_token'))
+    userinfo = discord.get(API_BASE_URL + '/users/@me').json()
+    session['username'] = userinfo['username']
+    session['avatar'] = userinfo['avatar']
+    session['userid'] = userinfo['id']
+    if session['userid'] in IDS:
+        return redirect(url_for('.upload'))
+    else:
+        session.clear()
+        return "401"
+
+
+@application.route('/logout/')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
-    application.run(host="0.0.0.0", threaded=True)
+    application.run(host="0.0.0.0")

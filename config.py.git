@@ -1,0 +1,19 @@
+import os
+
+OAUTH2_CLIENT_ID = ''
+OAUTH2_CLIENT_SECRET = ''
+OAUTH2_REDIRECT_URI = ''
+BOT_TOKEN = ''
+API_BASE_URL = os.environ.get('API_BASE_URL', 'https://discordapp.com/api')
+AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
+TOKEN_URL = API_BASE_URL + '/oauth2/token'
+LEWD_UPLOAD_FOLDER = "/var/www/nekoapi/lewd/"
+NEKO_UPLOAD_FOLDER = "/var/www/nekoapi/neko/"
+PAT_UPLOAD_FOLDER = "/var/www/nekoapi/pat/"
+HUG_UPLOAD_FOLDER = "/var/www/nekoapi/hug/"
+KISS_UPLOAD_FOLDER = "/var/www/nekoapi/kiss/"
+CUDDLE_UPLOAD_FOLDER = "/var/www/nekoapi/cuddle/"
+LIZARD_UPLOAD_FOLDER = "/var/www/nekoapi/lizard/"
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+SECRET_KEY = ''
+IDS = []
