@@ -1,17 +1,17 @@
 server {
     listen       80;
     server_name  bot.nekos.life;
-    return       301 https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384$request_uri;
+    return       301 https://discordapp.com/oauth2/authorize?client_id=334186716770598912&scope=bot&permissions=16384;
 }
 server {
     listen       80;
     server_name  invite.nekos.life;
-    return       301 https://discord.gg/BARzYz8$request_uri;
+    return       301 https://discord.gg/BARzYz8;
 }
 server {
     listen       80;
     server_name  paypal.nekos.life;
-    return       301 https://www.paypal.me/MewBot$request_uri;
+    return       301 https://www.paypal.me/MewBot;
 }
 
 server {
@@ -41,8 +41,40 @@ server {
 }
 
 server {
-    listen 80;
+    listen     80;
+    listen     443;
+
+    ssl        on;
+    ssl_certificate         /srv/nekos/cert.pem;
+    ssl_certificate_key     /srv/nekos/key.key;
+
     server_name testy.nekos.life;
+    error_log      /srv/nekos/nekos.nginx.err.log;
+
+     location /static/pat {
+      alias /var/www/nekoapi/pat;
+    }
+
+     location /static/kiss {
+      alias /var/www/nekoapi/kiss;
+    }
+
+         location /static/hug {
+      alias /var/www/nekoapi/hug;
+    }
+
+         location /static/neko {
+      alias /var/www/nekoapi/neko;
+    }
+
+        location /static/nya {
+      alias /var/www/nekoapi/lewd;
+    }
+
+        location /static {
+      alias /srv/nekos/static;
+    }
+
         location / {
         include uwsgi_params;
         uwsgi_pass unix:/srv/nekos/neko.sock;

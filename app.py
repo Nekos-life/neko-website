@@ -1,4 +1,5 @@
 import gevent.monkey
+
 # gevent for async
 # patch first to avoid recursion errors with oauth on callback
 gevent.monkey.patch_all()
@@ -6,6 +7,7 @@ gevent.monkey.patch_all()
 import os
 import random
 import sys
+import re
 from functools import wraps
 
 from flask import jsonify, abort, Flask, request, redirect, url_for, flash, render_template, session
@@ -14,9 +16,13 @@ from requests_oauthlib import OAuth2Session
 
 from config import OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET, OAUTH2_REDIRECT_URI, API_BASE_URL, AUTHORIZATION_BASE_URL, \
     TOKEN_URL, LEWD_UPLOAD_FOLDER, NEKO_UPLOAD_FOLDER, PAT_UPLOAD_FOLDER, HUG_UPLOAD_FOLDER, KISS_UPLOAD_FOLDER, \
-    CUDDLE_UPLOAD_FOLDER, LIZARD_UPLOAD_FOLDER, ALLOWED_EXTENSIONS, IDS , SECRET_KEY
+    CUDDLE_UPLOAD_FOLDER, LIZARD_UPLOAD_FOLDER, ALLOWED_EXTENSIONS, IDS, SECRET_KEY
 from static.cats import cats
 from static.why import why
+from static.facts import facts
+
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
 application = Flask(__name__)
 # Cross-Origin Resource Sharing
@@ -31,11 +37,54 @@ keys = []
 application.config['JSON_AS_ASCII'] = False
 application.config["SECRET_KEY"] = SECRET_KEY
 
+neko_bot = ChatBot("neko",
+                   preprocessors=[
+                       'chatterbot.preprocessors.clean_whitespace',
+                       'chatterbot.preprocessors.unescape_html',
+                       'chatterbot.preprocessors.convert_to_ascii'
+                   ],
+                   filters=["chatterbot.filters.RepetitiveResponseFilter"],
+                   storage_adapter="chatterbot.storage.MongoDatabaseAdapter",
+                   database='nekos_life1',
+                   logic_adapters=[
+                       {
+                           "import_path": "chatterbot.logic.BestMatch",
+                           "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance",
+                           "response_selection_method": "chatterbot.response_selection.get_first_response"
+                       },
+                       {
+                           'import_path': 'chatterbot.logic.SpecificResponseAdapter',
+                           'input_text': 'Help me!',
+                           'output_text': 'Ok, here is a link: https://nekos.life/'
+
+                       },
+                       {
+                           'import_path': 'chatterbot.logic.SpecificResponseAdapter',
+                           'input_text': 'who made you?',
+                           'output_text': 'Tails'
+
+                       }
+                   ])
+neko_bot.set_trainer(ChatterBotCorpusTrainer)
+neko_bot.train("chatterbot.corpus.english")
+
 if 'http://' in OAUTH2_REDIRECT_URI:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
 # we'll let cf handle this
 if 'https://' in OAUTH2_REDIRECT_URI:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
+
+
+def get_owo(text):
+    faces = ["owo", "UwU", ">w<", "^w^"]
+    v = text
+    r = re.sub('[rl]', "w", v)
+    r = re.sub('[RL]', "W", r)
+    r = re.sub('ove', 'uv', r)
+    r = re.sub('n', 'ny', r)
+    r = re.sub('N', 'NY', r)
+    r = re.sub('[!]', " " + random.choice(faces) + " ", r)
+    return r
 
 
 def allowed_file(filename):
@@ -79,6 +128,21 @@ def random_image(cat):
     random.shuffle(names)
     img_url = 'https://cdn.nekos.life/' + os.path.join(cat, random.choice(names))
     return img_url
+
+
+def random_ball():
+    names = os.listdir(os.path.join('/var/www/nekoapi/8ball/'))
+    name = random.choice(names)
+    res = os.path.splitext(os.path.basename(name))[0].replace("_", " ").replace("Youre", "You're")
+    random.shuffle(names)
+    img_url = 'https://cdn.nekos.life/' + os.path.join('8ball/', name)
+    return res, img_url
+
+
+@application.route('/api/v2/8ball')
+def ball():
+    res, img_url = random_ball()
+    return jsonify(response=res, url=img_url)
 
 
 @application.route('/')
@@ -154,7 +218,10 @@ def list_routes():
     for rule in application.url_map.iter_rules():
         options = {}
         for arg in rule.arguments:
-            options[arg] = "[{0}]".format(arg).replace("[cat]", "<neko,lewd,kiss,hug,pat,cuddle,lizard>")
+            options[arg] = "[{0}]".format(arg).replace("[cat]",
+                                                       str([name for name in os.listdir('/var/www/nekoapi/') if
+                                                            name != "old"]).replace("[", "<").replace("]", ">")
+                                                       )
         methods = ','.join(rule.methods)
         url = url_for(rule.endpoint, **options)
         if "v2" in str(url):
@@ -169,16 +236,65 @@ def list_routes():
     return jsonify(sorted(output))
 
 
+@application.route("/api/v2/chat")
+def get_neko_response():
+    if request.headers.get('text'):
+        if len(request.headers.get('text')) > 200 or len(request.headers.get('text')) < 1:
+            return jsonify(msg="oopsie whoopsie you made a fucky wucky, no text or text over 200")
+
+        if request.headers.get('owo') and request.headers.get('owo').lower() == "true":
+            input_msg = request.headers.get('text')
+            return jsonify(response=str(get_owo(str(neko_bot.get_response(input_msg)))))
+
+        input_msg = request.headers.get('text')
+        return jsonify(response=str(neko_bot.get_response(input_msg)))
+
+    if request.args.get('text'):
+        if len(request.args.get('text')) > 200 or len(request.args.get('text')) < 1:
+            return jsonify(msg="oopsie whoopsie you made a fucky wucky, no text or text over 200")
+
+        if request.args.get('owo') and request.args.get('owo').lower() == "true":
+            input_msg = request.args.get('text')
+            return jsonify(response=str(get_owo(str(neko_bot.get_response(input_msg)))))
+
+        input_msg = request.args.get('text')
+        return jsonify(response=str(neko_bot.get_response(input_msg)))
+
+    else:
+        return jsonify(msg="oopsie whoopsie you made a fucky wucky, no text or text over 200")
+
+
+@application.route('/api/v2/owoify')
+def owoify():
+    if request.args.get('text'):
+        if len(request.args.get('text')) > 200 or len(request.args.get('text')) < 1:
+            return jsonify(msg="oopsie whoopsie you made a fucky wucky, no text or text over 200")
+
+        return jsonify(owo=str(get_owo(request.args.get('text'))))
+    else:
+        return jsonify(msg="oopsie whoopsie you made a fucky wucky, no text or text over 200")
+
+
 @application.route('/api/v2/img/<string:cat>')
 def new(cat):
-    link = random_image(cat)
-    return jsonify(url=link)
+    try:
+        link = random_image(cat)
+        return jsonify(url=link)
+    except Exception as e:
+        print(e)
+        return jsonify(msg="404")
 
 
 @application.route('/api/v2/why')
 def _w():
     w = random.choice(why)
     return jsonify(why=w)
+
+
+@application.route('/api/v2/fact')
+def _f():
+    f = random.choice(facts)
+    return jsonify(fact=f)
 
 
 @application.route('/api/v2/cat')
@@ -300,4 +416,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    application.run(host="0.0.0.0")
+    application.run(host="0.0.0.0", threaded = True)
